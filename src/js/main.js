@@ -18,9 +18,12 @@ define('main',
     function($, Recorder) {
         "use strict";
 
-        $(function(){
+        $(function() {
             var startBtn = $('#start-recording'),
-                stopBtn = $('#stop-recording');
+                stopBtn = $('#stop-recording'),
+                recordings = $("#recordings");
+
+            Recorder.configure({ recordingsListEl: recordings[0] });
 
             startBtn.click(function() {
                 Recorder.start();

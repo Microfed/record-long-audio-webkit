@@ -96,6 +96,31 @@ function writeString(view, offset, string){
   }
 }
 
+/*function encodeLowWAV(samples) {
+    var block_align   = (1 * bits) / 8
+    ,   byte_rate     = sampleRate * block_align
+    ,   data_size     = (samples.length * bits) / 8
+    ,   buffer        = new ArrayBuffer(44 + data_size)
+    ,   view          = new DataView(buffer);
+
+    writeString( view, 0, 'RIFF' );
+    view.setUint32( 4, 32 + data_size, true ); //!!!
+    writeString( view, 8, 'WAVE' );
+    writeString( view, 12, 'fmt' );
+    view.setUint32( 16, 16, true );
+    view.setUint16( 20, 1, true );
+    view.setUint16( 22, 1, true );
+    view.setUint32( 24, sampleRate, true );
+    view.setUint32( 28, byte_rate, true );
+    view.setUint16( 32, block_align, true );
+    view.setUint16( 34, bits, true );
+    writeString( view, 36, 'data' );
+    view.setUint32( 40, data_size, true ); //!!!
+    floatTo16BitPCM( view, 44, samples );
+
+    return view;
+}*/
+
 function encodeWAV(samples){
   var buffer = new ArrayBuffer(44 + samples.length * 2);
   var view = new DataView(buffer);

@@ -57,7 +57,7 @@ define('lib/recordmp3/recordmp3',
         return function(source, cfg) {
             var config = cfg || {},
                 bufferLen = config.bufferLen || 4096,
-                recordingsList = config.recordings;
+                self = this;
 
             this.context = source.context;
             this.node = (this.context.createScriptProcessor ||
@@ -167,33 +167,12 @@ define('lib/recordmp3/recordmp3',
 
                             var mp3Blob = new Blob([new Uint8Array(e.data.buf)], { type: 'audio/mp3' });
 
-                            window.blobs.push(mp3Blob);
-
-                            var url = 'data:audio/mp3;base64,' + encode64(e.data.buf);
-
-                            console.log('MP3 url:', url);
-
-                            if (recordingsList) {
-                                var li = document.createElement('li');
-                                var au = document.createElement('audio');
-                                var hf = document.createElement('a');
-
-                                au.controls = true;
-                                au.src = url;
-                                hf.href = url;
-                                hf.download = 'audio_recording_' + new Date().getTime() + '.mp3';
-                                hf.innerHTML = hf.download;
-                                li.appendChild(au);
-                                li.appendChild(hf);
-                                recordingsList.appendChild(li);
-                            }
+                            currCallback(mp3Blob, self);
                         }
                     };
                 };
 
                 fileReader.readAsArrayBuffer(blob);
-
-                currCallback(blob);
             };
 
             source.connect(this.node);

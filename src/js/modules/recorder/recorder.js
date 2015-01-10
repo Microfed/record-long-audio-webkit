@@ -4,9 +4,10 @@
 define('modules/recorder/recorder',
     [
         'lib/recordmp3/recordmp3',
-        'modules/logger/log'
+        'modules/logger/log',
+        'jquery'
     ],
-    function(RecorderMP3, __log) {
+    function(RecorderMP3, __log, $) {
         "use strict";
 
         var audio_context,
@@ -130,7 +131,7 @@ define('modules/recorder/recorder',
                 recordingsListEl = config.recordingsListEl;
             };
 
-        window.onload = function init() {
+        $(function() {
             try {
                 // webkit shim
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -150,7 +151,7 @@ define('modules/recorder/recorder',
             navigator.getUserMedia({ audio: true }, startUserMedia, function(e) {
                 __log('No live audio input: ' + e);
             });
-        };
+        });
 
         return {
             start: startRecording,

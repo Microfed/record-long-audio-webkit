@@ -38,26 +38,27 @@ define('modules/recorder/recorder',
             },
 
             fileCreatedHandler = function(blob, extension) {
-                var url = URL.createObjectURL(blob);
-                var li = document.createElement('li');
-                var hf = document.createElement('a');
+                var url = URL.createObjectURL(blob),
+                    liEl = document.createElement('li'),
+                    linkEl = document.createElement('a'),
+                    audioEl = document.createElement('audio');
 
-                hf.href = url;
-                hf.download = new Date().toISOString() + '.' + extension;
-                hf.innerHTML = hf.download;
-                li.appendChild(hf);
+                linkEl.href = url;
+                linkEl.download = new Date().toISOString() + '.' + extension;
+                linkEl.innerHTML = linkEl.download;
+                liEl.appendChild(linkEl);
 
-                var au = document.createElement('audio');
-                au.controls = true;
-                au.src = url;
-                li.appendChild(au);
+                audioEl.controls = true;
+                audioEl.src = url;
+                liEl.appendChild(audioEl);
 
-                recordingsListEl.appendChild(li);
+                recordingsListEl.appendChild(liEl);
             },
 
             initializeRecorder = function() {
                 if (input) {
                     recorder = new RecorderMP3(input, { fileCreatedHandler: fileCreatedHandler });
+
                     __log('Recorder initialised.');
                 } else {
                     __log('Input is undefined');
@@ -74,13 +75,16 @@ define('modules/recorder/recorder',
             try {
                 // webkit shim
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
                 navigator.getUserMedia = ( navigator.getUserMedia ||
                                            navigator.webkitGetUserMedia ||
                                            navigator.mozGetUserMedia ||
                                            navigator.msGetUserMedia);
+
                 window.URL = window.URL || window.webkitURL;
 
                 audio_context = new AudioContext;
+
                 __log('Audio context set up.');
                 __log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
             } catch (e) {

@@ -109,7 +109,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('hint', ['compass:dev', 'jshint', 'inlinelint']);
 
-    grunt.registerTask('minify',
+    grunt.registerTask('build',
         [
             'clean:pre_dist', 'compass:dist', 'concat:css', 'requirejs', 'cssmin:dist', 'clean:dist'
         ]);

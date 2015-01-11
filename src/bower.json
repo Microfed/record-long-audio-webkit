@@ -1,0 +1,10 @@
+{
+  "name": "RLAW",
+  "version": "0.0.1",
+  "dependencies": {
+	  "jquery": "2.1",
+	  "underscore": null,
+	  "requirejs": null
+  },
+  "devDependencies": {}
+}

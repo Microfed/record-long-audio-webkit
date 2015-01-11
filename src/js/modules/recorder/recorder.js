@@ -3,7 +3,6 @@
  */
 define('modules/recorder/recorder',
     [
-        //'lib/recordmp3/recordmp3',
         'lib/recordmp3onfly/recorder',
         'modules/logger/log',
         'jquery'
@@ -15,21 +14,6 @@ define('modules/recorder/recorder',
             input,
             recorder,
             recordingsListEl,
-            //recordings = [],
-            //currentRecordingIndex = 0,
-            //partLength = 5000, // timeout in milliseconds
-            //isRecording = false,
-            //
-            //encode64 = function(buffer) {
-            //    var binary = '',
-            //        bytes = new Uint8Array(buffer),
-            //        len = bytes.byteLength;
-            //
-            //    for (var i = 0; i < len; i++) {
-            //        binary += String.fromCharCode(bytes[i]);
-            //    }
-            //    return window.btoa(binary);
-            //},
 
             startUserMedia = function(stream) {
                 input = audio_context.createMediaStreamSource(stream);
@@ -46,76 +30,12 @@ define('modules/recorder/recorder',
             startRecording = function() {
                 recorder && recorder.record();
                 __log('Recording...');
-
-                //recordings.push({ blobs: [], recording: null });
-                //isRecording = true;
-                //setTimeout(filePartRecorded, partLength);
             },
 
             stopRecording = function() {
-                //isRecording = false;
-
                 recorder && recorder.stop();
                 __log('Stopped recording.');
-
-                // create WAV download link using audio data blob
-                //createDownloadLink();
-                //
-                //currentRecordingIndex += 1;
             },
-
-            //filePartRecorded = function() {
-            //    if (isRecording) {
-            //        recorder.stop();
-            //
-            //        recorder.exportWAV(function(blob, self) {
-            //            recordings[currentRecordingIndex].blobs.push(blob);
-            //            self.clear();
-            //        });
-            //
-            //        recorder = new RecorderMP3(input);
-            //        recorder.record();
-            //        setTimeout(filePartRecorded, partLength);
-            //    }
-            //},
-
-            //createDownloadLink = function() {
-            //    var record = recordings[currentRecordingIndex];
-            //
-            //    recorder && recorder.exportWAV(function(blob) {
-            //        recorder.clear();
-            //        console.log('New blob created:', blob);
-            //
-            //        record.blobs.push(blob);
-            //
-            //        var recording = new Blob(record.blobs, { type: "audio/mp3" });
-            //
-            //        var fileReader = new FileReader();
-            //
-            //        fileReader.onload = function() {
-            //            var url = 'data:audio/mp3;base64,' + encode64(this.result);
-            //
-            //            console.log('MP3 url:', url);
-            //
-            //            if (recordingsListEl) {
-            //                var li = document.createElement('li');
-            //                var au = document.createElement('audio');
-            //                var hf = document.createElement('a');
-            //
-            //                au.controls = true;
-            //                au.src = url;
-            //                hf.href = url;
-            //                hf.download = 'audio_recording_' + new Date().getTime() + '.mp3';
-            //                hf.innerHTML = hf.download;
-            //                li.appendChild(au);
-            //                li.appendChild(hf);
-            //                recordingsListEl.appendChild(li);
-            //            }
-            //        };
-            //
-            //        fileReader.readAsArrayBuffer(recording);
-            //    });
-            //},
 
             fileCreatedHandler = function(blob, extension) {
                 var url = URL.createObjectURL(blob);

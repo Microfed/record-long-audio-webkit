@@ -1,3 +1,6 @@
+/**
+ * DEPRECATED
+ */
 define('lib/recordmp3/recordmp3',
     [],
     function() {

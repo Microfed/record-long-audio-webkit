@@ -5,22 +5,7 @@ define('lib/recordmp3onfly/recorder',
 
             endFile = function(blob, extension, fileCreatedCallback) {
                 console.log("Done converting to " + extension);
-
                 console.log("the blob " + blob + " " + blob.size + " " + blob.type);
-
-                var url = URL.createObjectURL(blob);
-                var li = document.createElement('li');
-                var hf = document.createElement('a');
-
-                hf.href = url;
-                hf.download = new Date().toISOString() + '.' + extension;
-                hf.innerHTML = hf.download;
-                li.appendChild(hf);
-
-                var au = document.createElement('audio');
-                au.controls = true;
-                au.src = url;
-                li.appendChild(au);
 
                 if (fileCreatedCallback) { fileCreatedCallback(blob, extension); }
             };
@@ -33,67 +18,60 @@ define('lib/recordmp3onfly/recorder',
 
             this.context = source.context;
 
-            /*
-             ScriptProcessorNode createScriptProcessor (optional unsigned long bufferSize = 0,
-             optional unsigned long numberOfInputChannels = 2, optional unsigned long numberOfOutputChannels = 2 );
-             */
-
             this.node = (this.context.createScriptProcessor || this.context.createJavaScriptNode).call(this.context,
                 bufferLen,
                 1,
                 1);
+
             this.node.connect(this.context.destination); //this should not be necessary
 
             this.node.onaudioprocess = function(e) {
-                if (!recording) {
-                    return;
+                var channelLeft;
+
+                if (recording) {
+                    channelLeft = e.inputBuffer.getChannelData(0);
+
+                    console.log('onAudioProcess' + channelLeft.length);
+
+                    encoderMp3Worker.postMessage({
+                        command: 'encode',
+                        buf: channelLeft
+                    });
                 }
-
-                var channelLeft = e.inputBuffer.getChannelData(0);
-
-                console.log('onAudioProcess' + channelLeft.length);
-
-                encoderMp3Worker.postMessage({
-                    command: 'encode',
-                    buf: channelLeft
-                });
             };
 
-            source.connect(this.node);
-
             this.record = function() {
-                if (recording) {
+                var sampleRate;
+
+                if (!recording) {
+                    recording = true;
+                    sampleRate = this.context.sampleRate;
+
+                    console.log("Initializing to Mp3");
+
+                    encoderMp3Worker.postMessage({
+                        command: 'init',
+                        config: {
+                            channels: 1,
+                            mode: 3 /* means MONO*/,
+                            samplerate: 22050,
+                            bitrate: 64,
+                            insamplerate: sampleRate
+                        }
+                    });
+                } else {
                     return false;
                 }
-
-                recording = true;
-
-                var sampleRate = this.context.sampleRate;
-
-                console.log("Initializing to Mp3");
-
-                encoderMp3Worker.postMessage({
-                    command: 'init',
-                    config: {
-                        channels: 1,
-                        mode: 3 /* means MONO*/,
-                        samplerate: 22050,
-                        bitrate: 64,
-                        insamplerate: sampleRate
-                    }
-                });
             };
 
             this.stop = function() {
-                if (!recording) {
-                    return;
+                if (recording) {
+                    encoderMp3Worker.postMessage({
+                        command: 'finish'
+                    });
+
+                    recording = false;
                 }
-
-                encoderMp3Worker.postMessage({
-                    command: 'finish'
-                });
-
-                recording = false;
             };
 
             encoderMp3Worker.onmessage = function(e) {
@@ -105,10 +83,10 @@ define('lib/recordmp3onfly/recorder',
                 case 'mp3':
                     var buf = e.data.buf;
                     endFile(buf, 'mp3', fileCreatedCallback);
-                    //encoderMp3Worker.terminate();
-                    //encoderMp3Worker = null;
                     break;
                 }
             };
+
+            source.connect(this.node);
         };
     });

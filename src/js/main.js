@@ -1,12 +1,10 @@
 require.config({
     baseUrl: 'js/',
     paths: {
-        'jquery': 'lib/jquery/dist/jquery',
-        'underscore': 'lib/underscore/underscore'
+        'jquery': 'lib/jquery/dist/jquery'
     },
     shim: {
-        'jquery': { exports: 'jQuery' },
-        'underscore': { exports: '_' }
+        'jquery': { exports: 'jQuery' }
     }
 });
 
@@ -37,6 +35,4 @@ define('main',
                 startBtn.removeAttr('disabled');
             });
         });
-
-        window.blobs = [];
     });
